@@ -3,6 +3,13 @@ function isNumber(val) {
 }
 
 /**
+ * 使用成员标识符
+ */
+let _x = Symbol("_x"),
+    _y = Symbol("_y"),
+    _w = Symbol("_w");
+
+/**
  * 表示一个2D矢量
  */
 export class Vector2 {
@@ -15,9 +22,31 @@ export class Vector2 {
      * @param {Number} w 矢量的 时间刻度
      */
     constructor(x, y, w = (new Date()).getTime()) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
+        //私有成员实现
+        this[_x] = x;
+        this[_y] = y;
+        this[_w] = w;
+    }
+
+    /**
+     * 提供x属性访问
+     */
+    get x() {
+        return this[_x];
+    }
+
+    /**
+     * 提供y属性访问
+     */
+    get y() {
+        return this[_y];
+    }
+
+    /**
+     * 提供w属性访问
+     */
+    get w() {
+        return this[_w];
     }
 
     /* instance member */
@@ -198,7 +227,7 @@ export class Vector2 {
      * @param {Number} len 要前进的长度
      * @returns {Vector2} 指定目标的矢量
      */
-    toward(len) {
+    forward(len) {
         if (isNumber(len)) {
             var tar = this.normalize().multiply(len);
             return this.addition(tar);
@@ -227,7 +256,7 @@ export class Vector2 {
     static angle(v1, v2) {
         var a,
             r = v1.magnitude(),
-            t = v2.normalize().toward(r - 1);
+            t = v2.normalize().forward(r - 1);
         a = Vector2.distance(t, v1) * 0.5;
         var half = Math.asin(a / r) * 180 / Math.PI;
         return half * 2;
@@ -361,7 +390,11 @@ export class Vector2 {
      * @returns {Vector2} 趋势
      */
     static trend(v) {
-        return new Vector2(v.x / Math.abs(v.x), v.y / Math.abs(v.y));
+        var xt = v.x / Math.abs(v.x),
+            yt = v.y / Math.abs(v.y);
+        xt = xt || 0,
+            yt = yt || 0;
+        return new Vector2(xt, yt);
     }
 }
 
